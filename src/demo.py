@@ -13,12 +13,12 @@ def bokeh_effect(image, focal_distance, blur_strength):
     depth = depth/max_depth
     print("depth estimated")
 
-    bokeh_image = depth_of_field_effect(image, depthmap=depth, focal_distance= i*0.05, blur_amount = 7)
+    bokeh_image = depth_of_field_effect(image, depthmap=depth, focal_distance= focal_distance, blur_amount = blur_strength)
     return bokeh_image
 
 if __name__ == "__main__":
     image = cv2.imread("images/ring.jpg")
-    bokeh_image = bokeh_effect(image)
+    bokeh_image = bokeh_effect(image, focal_distance=0.5, blur_strength=7)
     plt.subplot(121)
     plt.imshow(image)
     plt.title("Input")
