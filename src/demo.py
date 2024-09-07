@@ -8,9 +8,7 @@ from .utils import depth_of_field_effect
 def bokeh_effect(image, focal_distance, blur_strength):
     image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
     depth = np.array(estimate_depth(image, encoder='vitl'))
-    max_depth = np.max(depth)
-    depth = max_depth - depth
-    depth = depth/max_depth
+    depth = (depth - depth.min()) / (depth.max() - depth.min())
     print("depth estimated")
 
     bokeh_image = depth_of_field_effect(image, depthmap=depth, focal_distance= focal_distance, blur_amount = blur_strength)
