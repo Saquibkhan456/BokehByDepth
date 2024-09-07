@@ -3,8 +3,8 @@ import numpy as np
 
 
 def depth_of_field_effect(image, depthmap, focal_distance, blur_amount):
-    # weight_map = 1 - np.exp(-(depthmap - focal_distance)**2/ (2*blur_amount))
-    weight_map = np.sqrt(np.abs(depthmap - focal_distance))
+    weight_map = 1 - np.exp(-(depthmap - focal_distance)**2/ (2*blur_amount))
+    # weight_map = np.abs(depthmap - focal_distance)
     kernel_size = int(2*blur_amount) + 1
     sigma = blur_amount
     if kernel_size%2 ==0:
