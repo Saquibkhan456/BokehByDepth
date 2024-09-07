@@ -1,0 +1,3 @@
+[submodule "third_party/depthanything"]
+	path = third_party/depthanything
+	url = https://github.com/LiheYoung/Depth-Anything.git
