@@ -4,37 +4,37 @@ import torch
 
 
 
-def split_into_patches(image_array, num_patches_height=10, num_patches_width=10):
-    image_array = torch.from_numpy(image_array)
-    K,H, W, C = image_array.shape
-    patch_height = H//num_patches_height
-    patch_width = W//num_patches_width
-    patches = image_array.unfold(1, patch_height, patch_height).unfold(2, patch_width, patch_width)
-    patches = patches.reshape(K,num_patches_height * num_patches_width, C, patch_height, patch_width)
-    return patches.numpy().transpose(0,1,3,2,1)
+# def split_into_patches(image_array, num_patches_height=10, num_patches_width=10):
+#     image_array = torch.from_numpy(image_array)
+#     K,H, W, C = image_array.shape
+#     patch_height = H//num_patches_height
+#     patch_width = W//num_patches_width
+#     patches = image_array.unfold(1, patch_height, patch_height).unfold(2, patch_width, patch_width)
+#     patches = patches.reshape(K,num_patches_height * num_patches_width, C, patch_height, patch_width)
+#     return patches.numpy().transpose(0,1,3,2,1)
      
          
-def gaussian_patch(kernel_size, sigma_patch):
+def create_gaussian_array(kernel_size, sigma_array):
     """Generates a Gaussian kernel."""
-    h,w = sigma_patch.shape
+    h,w = sigma_array.shape
     ax = np.arange(-kernel_size // 2 + 1., kernel_size // 2 + 1.)
     xx, yy = np.meshgrid(ax, ax)
     term = np.exp(-(xx**2 + yy**2)/2).reshape(-1)
     term_tiled = np.tile(term, (h, w, 1))
-    gaussian_patch = term_tiled * sigma_patch[:, :, np.newaxis]
+    gaussian_patch = term_tiled * sigma_array[:, :, np.newaxis]
     return gaussian_patch
 
-def stitch_patches_together(image_patches):
-    final_result = np.zeros((image_patches.shape[0] * image_patches.shape[2],
-                             image_patches.shape[1] * image_patches.shape[3]), dtype=np.uint8)
-    for i in range(image_patches.shape[0]):
-        for j in range(image_patches.shape[0]):
-            final_result[i:image_patches.shape[2], j:image_patches.shape[3]] = image_patches[i,j]
-    return final_result
+# def stitch_patches_together(image_patches):
+#     final_result = np.zeros((image_patches.shape[0] * image_patches.shape[2],
+#                              image_patches.shape[1] * image_patches.shape[3]), dtype=np.uint8)
+#     for i in range(image_patches.shape[0]):
+#         for j in range(image_patches.shape[0]):
+#             final_result[i:image_patches.shape[2], j:image_patches.shape[3]] = image_patches[i,j]
+#     return final_result
 
 
-def patch_blurring(image_patch_array, gaussian_patch):
-    return np.sum(image_patch_array*gaussian_patch[..., np.newaxis], axis=-1).astype(np.uint8)
+def gaussian_blurring(image_array, gaussian_array):
+    return np.sum(image_array * gaussian_array[..., np.newaxis], axis=-1).astype(np.uint8)
 
 
 def prepare_image_array(image, kernel_size):
@@ -67,4 +67,4 @@ def depth_of_field_effect(image, depthmap, focal_distance, blur_amount):
 if __name__ == "__main__":
     kernel_size = 5
     sigma_patch = np.random.rand(100,100)
-    gaussian_patch(kernel_size, sigma_patch)
+    create_gaussian_array(kernel_size, sigma_patch)
