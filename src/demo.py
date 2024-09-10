@@ -17,7 +17,7 @@ def bokeh_effect(image, focal_distance, blur_strength):
     return bokeh_image
 
 if __name__ == "__main__":
-    image = cv2.imread("images/ring.jpg")
+    image = cv2.imread("assets/input/ring.jpg")
     bokeh_image = bokeh_effect(image, focal_distance=0.5, blur_strength=7)
     plt.subplot(121)
     plt.imshow(image)
