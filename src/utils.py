@@ -24,6 +24,15 @@ def gaussian_patch(kernel_size, sigma_patch):
     gaussian_patch = term_tiled * sigma_patch[:, :, np.newaxis]
     return gaussian_patch
 
+def stitch_patches_together(image_patches):
+    final_result = np.zeros((image_patches.shape[0] * image_patches.shape[2],
+                             image_patches.shape[1] * image_patches.shape[3]), dtype=np.uint8)
+    for i in range(image_patches.shape[0]):
+        for j in range(image_patches.shape[0]):
+            final_result[i:image_patches.shape[2], j:image_patches.shape[3]] = image_patches[i,j]
+    return final_result
+
+
 def patch_blurring(image_patch_array, gaussian_patch):
     result = np.sum(image_patch_array*gaussian_patch, axis=-1)
     result
