@@ -22,12 +22,24 @@ def gaussian_patch(kernel_size, sigma_patch):
     term = np.exp(-(xx**2 + yy**2)/2).reshape(-1)
     term_tiled = np.tile(term, (h, w, 1))
     gaussian_patch = term_tiled * sigma_patch[:, :, np.newaxis]
-    #kernel = np.exp(term/ (2. * sigma**2))
     return gaussian_patch
 
-def patch_blurring(image_patch, gaussian_patch):
-    result = np.sum(image_patch*gaussian_patch, axis=-1)
+def patch_blurring(image_patch_array, gaussian_patch):
+    result = np.sum(image_patch_array*gaussian_patch, axis=-1)
     result
+
+
+def prepare_image_array(image, kernel_size):
+    image_array = []
+    padding = kernel_size//2
+    padded_image = np.pad(image, ((padding, padding), (padding, padding), (0, 0)), mode='reflect')
+    idx = np.arange(-kernel_size//2+1, kernel_size//2+1)
+    for i in range(kernel_size):
+        for j in range(kernel_size):
+            part = np.roll(padded_image, (idx[j], idx[i]), axis=(1,0))
+            image_array.append(part)
+    result = image_array[:,padded_image:-padding, padded_image:-padding, :]
+    return result
 
 
 def depth_of_field_effect(image, depthmap, focal_distance, blur_amount):
