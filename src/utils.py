@@ -4,14 +4,14 @@ import torch
 
 
 
-def split_into_patches(image, num_patches_height=10, num_patches_width=10):
-    image = torch.from_numpy(image)
-    H, W, C = image.shape
+def split_into_patches(image_array, num_patches_height=10, num_patches_width=10):
+    image_array = torch.from_numpy(image_array)
+    K,H, W, C = image_array.shape
     patch_height = H//num_patches_height
     patch_width = W//num_patches_width
-    patches = image.unfold(0, patch_height, patch_height).unfold(1, patch_width, patch_width)
-    patches = patches.reshape(-1, C, patch_height, patch_width)
-    return patches.numpy().transpose(0,2,3,1)
+    patches = image_array.unfold(1, patch_height, patch_height).unfold(2, patch_width, patch_width)
+    patches = patches.reshape(K,num_patches_height * num_patches_width, C, patch_height, patch_width)
+    return patches.numpy().transpose(0,1,3,2,1)
      
          
 def gaussian_patch(kernel_size, sigma_patch):
@@ -38,7 +38,7 @@ def prepare_image_array(image, kernel_size):
         for j in range(kernel_size):
             part = np.roll(padded_image, (idx[j], idx[i]), axis=(1,0))
             image_array.append(part)
-    result = image_array[:,padding:-padding, padding:-padding, :]
+    result = image_array[:, padding:-padding, padding:-padding, :]
     return result
 
 
