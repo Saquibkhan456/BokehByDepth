@@ -1,5 +1,20 @@
 import cv2
 import numpy as np
+import torch
+
+
+
+def split_into_patches(image, num_patches_height=10, num_patches_width=10):
+    
+    # Get image dimensions
+    image = torch.from_numpy(image)
+    H, W, C = image.shape
+    patch_height = H//num_patches_height
+    patch_width = W//num_patches_width
+    patches = image.unfold(0, patch_height, patch_height).unfold(1, patch_width, patch_width)
+    patches = patches.reshape(-1, C, patch_height, patch_width)
+    return patches.numpy().transpose(0,2,3,1)
+
 
 
 def depth_of_field_effect(image, depthmap, focal_distance, blur_amount):
