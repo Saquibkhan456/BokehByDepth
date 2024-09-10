@@ -2,7 +2,15 @@ import cv2
 import numpy as np
 import torch
 
-
+def bokeh_effect(image, depthmap, focal_distance, kernel_size = 5):
+    weight_map = 1 - np.exp(-(depthmap - focal_distance)**2/ (2*kernel_size))
+    weight_map = weight_map / np.max(weight_map)
+    sigma_array = 2 * weight_map**2
+    gaussian_array = create_gaussian_array(kernel_size, sigma_array)
+    image_array = prepare_image_array(image)
+    blurred = np.sum(image_array * gaussian_array[..., np.newaxis], axis=-1).astype(np.uint8)
+    return blurred
+    
 
 # def split_into_patches(image_array, num_patches_height=10, num_patches_width=10):
 #     image_array = torch.from_numpy(image_array)
@@ -32,9 +40,6 @@ def create_gaussian_array(kernel_size, sigma_array):
 #             final_result[i:image_patches.shape[2], j:image_patches.shape[3]] = image_patches[i,j]
 #     return final_result
 
-
-def gaussian_blurring(image_array, gaussian_array):
-    return np.sum(image_array * gaussian_array[..., np.newaxis], axis=-1).astype(np.uint8)
 
 
 def prepare_image_array(image, kernel_size):
