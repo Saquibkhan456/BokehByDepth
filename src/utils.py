@@ -34,8 +34,7 @@ def stitch_patches_together(image_patches):
 
 
 def patch_blurring(image_patch_array, gaussian_patch):
-    result = np.sum(image_patch_array*gaussian_patch, axis=-1)
-    result
+    return np.sum(image_patch_array*gaussian_patch[..., np.newaxis], axis=-1).astype(np.uint8)
 
 
 def prepare_image_array(image, kernel_size):
@@ -53,7 +52,6 @@ def prepare_image_array(image, kernel_size):
 
 def depth_of_field_effect(image, depthmap, focal_distance, blur_amount):
     weight_map = 1 - np.exp(-(depthmap - focal_distance)**2/ (2*blur_amount))
-    # weight_map = np.abs(depthmap - focal_distance)
     kernel_size = int(2*blur_amount) + 1
     sigma = blur_amount
     if kernel_size%2 ==0:
