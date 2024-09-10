@@ -38,7 +38,7 @@ def prepare_image_array(image, kernel_size):
         for j in range(kernel_size):
             part = np.roll(padded_image, (idx[j], idx[i]), axis=(1,0))
             image_array.append(part)
-    result = image_array[:,padded_image:-padding, padded_image:-padding, :]
+    result = image_array[:,padding:-padding, padding:-padding, :]
     return result
 
 
