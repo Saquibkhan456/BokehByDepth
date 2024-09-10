@@ -4,8 +4,6 @@ import torch
 
 def bokeh_effect_sim(image, depthmap, focal_distance, kernel_size = 5):
     weight_map = np.abs(depthmap - focal_distance)
-    # weight_map = 1 - np.exp(-(depthmap - focal_distance)**2/ (2*kernel_size))
-    # weight_map = weight_map / np.max(weight_map)
     sigma_array = 3 * (0.001 + weight_map)**4
     gaussian_array = create_gaussian_array(kernel_size, sigma_array)
     image_array = prepare_image_array(image, kernel_size=kernel_size)
@@ -27,28 +25,17 @@ def bokeh_effect_avg(image, depthmap, focal_distance, kernel_size = 15):
 def normalize_between_1_and_n(arr, n):
     arr_min = arr.min()
     arr_max = arr.max()
-
-    # Normalize to range [1, n]
     normalized_arr = 1 + ((arr - arr_min) / (arr_max - arr_min)) * (n - 1)
 
     return normalized_arr
-# def split_into_patches(image_array, num_patches_height=10, num_patches_width=10):
-#     image_array = torch.from_numpy(image_array)
-#     K,H, W, C = image_array.shape
-#     patch_height = H//num_patches_height
-#     patch_width = W//num_patches_width
-#     patches = image_array.unfold(1, patch_height, patch_height).unfold(2, patch_width, patch_width)
-#     patches = patches.reshape(K,num_patches_height * num_patches_width, C, patch_height, patch_width)
-#     return patches.numpy().transpose(0,1,3,2,1)
-     
+
          
 def create_gaussian_array(kernel_size, sigma_array):
     """Generates a Gaussian kernel."""
     h,w = sigma_array.shape
     sigma_array = np.exp(1/(sigma_array**2))
     sigma_array[sigma_array == np.inf] = 100
-    # sigma_array[sigma_array > 5.0] = 5.0
-    # sigma_array[sigma_array > 5] = 0.01
+
     ax = np.arange(-kernel_size // 2 + 1., kernel_size // 2 + 1.)
     xx, yy = np.meshgrid(ax, ax)
     term = np.exp(-(xx**2 + yy**2)/2).reshape(-1)
@@ -56,17 +43,9 @@ def create_gaussian_array(kernel_size, sigma_array):
     gaussian_patch = term_tiled * sigma_array[:, :, np.newaxis]
     max_vals = np.sum(gaussian_patch, axis=2, keepdims=True)
     gaussian_patch = gaussian_patch/max_vals
-    # gaussian_patch[gaussian_patch==np.nan] = 0
-    # gaussian_patch[gaussian_patch==np.inf] = 0
+
     return gaussian_patch.transpose(2,0,1)
 
-# def stitch_patches_together(image_patches):
-#     final_result = np.zeros((image_patches.shape[0] * image_patches.shape[2],
-#                              image_patches.shape[1] * image_patches.shape[3]), dtype=np.uint8)
-#     for i in range(image_patches.shape[0]):
-#         for j in range(image_patches.shape[0]):
-#             final_result[i:image_patches.shape[2], j:image_patches.shape[3]] = image_patches[i,j]
-#     return final_result
 
 def create_avg_array(kernel_matrix):
     # Create a range array of shape (10,) for comparison
