@@ -31,7 +31,7 @@ def normalize_between_1_and_n(arr, n):
 
          
 def create_gaussian_array(kernel_size, sigma_array):
-    """Generates a Gaussian kernel."""
+    
     h,w = sigma_array.shape
     sigma_array = np.exp(1/(sigma_array**2))
     sigma_array[sigma_array == np.inf] = 100
@@ -53,10 +53,8 @@ def create_avg_array(kernel_matrix):
     avg_matrix = np.zeros((kernel_matrix.shape[0], kernel_matrix.shape[1],max_size ), dtype=np.uint8)
     indices = np.arange(avg_matrix.shape[2])
     
-    # Use broadcasting to compare arr_values with indices along the last axis
     mask = indices < kernel_matrix[..., np.newaxis]
     
-    # Assign 1 where mask is True
     avg_matrix[mask] = 1
     avg_matrix = avg_matrix/np.sum(avg_matrix, axis=2, keepdims=True)
     avg_matrix = np.roll(avg_matrix , (max_size//2 +1),axis=-1)
