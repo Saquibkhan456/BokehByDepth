@@ -26,18 +26,23 @@ if __name__ == "__main__":
     
     plt.subplot(141)
     plt.imshow(image)
+    plt.axis('off')
+
     plt.title("Original", fontsize=8)
     plt.subplot(142)
     plt.imshow(depth)
+    plt.axis('off')
+
     plt.title("estimated depth", fontsize=8)
     plt.subplot(143)
     plt.imshow(bokeh_image1)
+    plt.axis('off')
     plt.title("near focus", fontsize=8)
     plt.subplot(144)
     plt.imshow(bokeh_image2)
-    plt.title("far focus", fontsize=8)
     plt.axis('off')
-    plt.savefig('output_image.jpg', format='jpg', bbox_inches='tight', pad_inches=0)
+    plt.title("far focus", fontsize=8)
+    plt.savefig('output_image.jpg', format='jpg', bbox_inches='tight', pad_inches=5)
     plt.show()
 
 
