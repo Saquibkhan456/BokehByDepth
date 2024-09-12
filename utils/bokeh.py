@@ -2,7 +2,7 @@ import cv2
 import numpy as np
 import torch
 
-def bokeh_effect_sim(image, depthmap, focal_distance, kernel_size = 5):
+def bokeh_effect_gaussian(image, depthmap, focal_distance, kernel_size = 5):
     weight_map = np.abs(depthmap - focal_distance)
     sigma_array = 3 * (0.001 + weight_map)**4
     gaussian_array = create_gaussian_array(kernel_size, sigma_array)
