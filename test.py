@@ -42,7 +42,7 @@ if __name__ == "__main__":
     plt.imshow(bokeh_image2)
     plt.axis('off')
     plt.title("far focus", fontsize=8)
-    plt.savefig('teaser.jpg', format='jpg', bbox_inches='tight', pad_inches=0)
+    plt.savefig('teaser.jpg', format='jpg', bbox_inches='tight', dpi=600, pad_inches=0)
     plt.show()
 
 
