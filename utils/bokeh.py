@@ -14,7 +14,7 @@ def bokeh_effect_gaussian(image, depthmap, focal_distance, kernel_size = 5):
 
 def bokeh_effect_avg(image, depthmap, focal_distance, kernel_size = 15):
     weight_map = np.abs(depthmap - focal_distance)
-    kernel_matrix = (normalize_between_1_and_n(np.array(weight_map), kernel_size).astype(np.uint8))**2
+    kernel_matrix = (normalize_between_1_and_n(np.array(weight_map), kernel_size).astype(np.uint16))**2
     avg_array = create_avg_array(kernel_matrix)
     image_array = prepare_image_array(image, kernel_size=kernel_size)
     prod = np.array(image_array * avg_array[..., np.newaxis])
