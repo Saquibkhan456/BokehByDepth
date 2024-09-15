@@ -4,6 +4,8 @@ import cv2
 from utils.estimate_depth import estimate_depth
 from utils.bokeh import *
 import hashlib
+import time
+
 cache = {}
 def hash_image(image):
     # Convert the image to bytes and hash it
@@ -16,7 +18,7 @@ def bokeh_effect(image, focal_distance, kernel_size,  resize_by = 1, depth=None,
     image_hash = hash_image(image)
     image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
     
-    image = cv2.resize(image, (image.shape[0]//resize_by, image.shape[1]//resize_by))
+    image = cv2.resize(image, (image.shape[1]//resize_by, image.shape[0]//resize_by))
     if depth is None or image_hash not in cache :
         depth = np.array(estimate_depth(image, encoder=encoder))
         
@@ -29,7 +31,9 @@ def bokeh_effect(image, focal_distance, kernel_size,  resize_by = 1, depth=None,
     elif depth is not None and image_hash in cache :
         depth = cache[image_hash]
         print("using cached depth")
+    s = time.time()
     bokeh_image = bokeh_effect_avg(image, depthmap=depth, focal_distance= focal_distance, kernel_size= kernel_size)
+    print(f'this took : {time.time() - s} seconds')
     bokeh_image = cv2.cvtColor(bokeh_image, cv2.COLOR_BGR2RGB)
     if resize_by:
         bokeh_image = cv2.resize(bokeh_image, (w, h))

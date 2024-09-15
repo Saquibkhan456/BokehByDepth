@@ -18,7 +18,7 @@ def bokeh_effect(image, focal_distance, kernel_size,  resize_by = 1, depth=None,
     image_hash = hash_image(image)
     image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
     
-    image = cv2.resize(image, (image.shape[0]//resize_by, image.shape[1]//resize_by))
+    image = cv2.resize(image, (image.shape[1]//resize_by, image.shape[0]//resize_by))
     if depth is None or image_hash not in cache :
         depth = np.array(estimate_depth(image, encoder=encoder))
         
@@ -44,7 +44,7 @@ iface = gr.Interface(
     inputs=[
         gr.Image(type="numpy"),
         gr.Slider(minimum=0, maximum=1, step=0.01, label="focal_distance"),
-        gr.Slider(minimum=3, maximum=11, step=1, label="Blur strength"),  
+        gr.Slider(minimum=3, maximum=15, step=2, label="Blur strength"),  
         gr.Slider(minimum=1, maximum=4, step=1, label="resize_by")
     ],
     outputs=gr.Image(type="numpy"),
