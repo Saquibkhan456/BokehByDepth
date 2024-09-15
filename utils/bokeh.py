@@ -1,13 +1,15 @@
 import cv2
 import numpy as np
-import torch
-
+import numexpr as ne
+import time
 def bokeh_effect_gaussian(image, depthmap, focal_distance, kernel_size = 5):
     weight_map = np.abs(depthmap - focal_distance)
     sigma_array = 3 * (0.001 + weight_map)**4
     gaussian_array = create_gaussian_array(kernel_size, sigma_array)
     image_array = prepare_image_array(image, kernel_size=kernel_size)
-    prod = np.array(image_array * gaussian_array[..., np.newaxis])
+    s = time.time()
+    prod = np.evaluate('image_array * avg_array[..., np.newaxis]')
+    print(f"this took : {time.time() - s} seconds")
     blurred = (np.sum(prod, axis=0)).astype(np.uint8)
     return blurred
     
@@ -16,9 +18,17 @@ def bokeh_effect_avg(image, depthmap, focal_distance, kernel_size = 15):
     weight_map = np.abs(depthmap - focal_distance)
     kernel_matrix = (normalize_between_1_and_n(np.array(weight_map), kernel_size).astype(np.uint16))**2
     avg_array = create_avg_array(kernel_matrix)
+    print("blur kernel created")
     image_array = prepare_image_array(image, kernel_size=kernel_size)
-    prod = np.array(image_array * avg_array[..., np.newaxis])
-    blurred = (np.sum(prod, axis=0)).astype(np.uint8)
+    print("image array created")
+    s = time.time()
+    # image_array = np.multiply(image_array, avg_array[..., np.newaxis])
+    # print(f"this took : {time.time() - s} seconds")
+    # print("product done")
+    # blurred = (np.sum(image_array, axis=0)).astype(np.uint8)
+    blurred = np.einsum('ijkl,ijk->jkl', image_array, avg_array).astype(np.uint8)
+    print(f"this took : {time.time() - s} seconds")
+    print("sum done")
     return blurred
 
 

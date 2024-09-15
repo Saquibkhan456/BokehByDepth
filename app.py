@@ -1,9 +1,11 @@
+import gradio as gr
 import numpy as np
 import matplotlib.pyplot as plt
 import cv2
 from utils.estimate_depth import estimate_depth
 from utils.bokeh import *
 import hashlib
+
 cache = {}
 def hash_image(image):
     # Convert the image to bytes and hash it
@@ -35,33 +37,20 @@ def bokeh_effect(image, focal_distance, kernel_size,  resize_by = 1, depth=None,
         bokeh_image = cv2.resize(bokeh_image, (w, h))
     return bokeh_image
 
-if __name__ == "__main__":
-    image = cv2.imread("assets/images/bench.jpg")
-    image = cv2.resize(image, (image.shape[1]//3, image.shape[0]//3))
-    bokeh_image1,depth = bokeh_effect(image, focal_distance=0.1, kernel_size=11)
-    bokeh_image2, _ = bokeh_effect(image, focal_distance=0.99, kernel_size=11, depth=depth)
-    image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
-    
-    plt.subplot(141)
-    plt.imshow(image)
-    plt.axis('off')
 
-    plt.title("Original", fontsize=8)
-    plt.subplot(142)
-    plt.imshow(depth, cmap="jet")
-    plt.axis('off')
+# Create a Gradio interface
+iface = gr.Interface(
+    fn=bokeh_effect,
+    inputs=[
+        gr.Image(type="numpy"),
+        gr.Slider(minimum=0, maximum=1, step=0.01, label="focal_distance"),
+        gr.Slider(minimum=3, maximum=11, step=1, label="Blur strength"),  
+        gr.Slider(minimum=1, maximum=4, step=1, label="resize_by")
+    ],
+    outputs=gr.Image(type="numpy"),
+    title="Depth of Field Effect",
+    description="Upload an image and adjust parameters to see the depth of field effect."
+)
 
-    plt.title("estimated depth", fontsize=8)
-    plt.subplot(143)
-    plt.imshow(bokeh_image1)
-    plt.axis('off')
-    plt.title("near focus", fontsize=8)
-    plt.subplot(144)
-    plt.imshow(bokeh_image2)
-    plt.axis('off')
-    plt.title("far focus", fontsize=8)
-    plt.savefig('teaser2.jpg', format='jpg', bbox_inches='tight', dpi=1000, pad_inches=0)
-    plt.show()
-
-
-
+# Launch the Gradio app
+iface.launch()
